@@ -88,9 +88,9 @@ const Login = () => {
                 <div className='auth-card__visual'>
                     <div className='auth-card__visual-glow' />
                     <div className='auth-card__visual-content'>
-                        <p className='auth-card__eyebrow'>Northstar AI</p>
-                        <h2>Precision coaching for modern interviews.</h2>
-                        <p>Turn your résumé and role context into a tailored prep roadmap with calm, clear guidance.</p>
+                        <p className='auth-card__eyebrow'>CareerLens AI</p>
+                        <h2>Turn your résumé into a sharper career story.</h2>
+                        <p>Use AI-powered resume intelligence and career optimization to prepare with clarity and confidence.</p>
                         <div className='auth-card__illustration' aria-hidden='true'>
                             <svg viewBox='0 0 320 220' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'>
                                 <rect x='32' y='38' width='256' height='144' rx='24' fill='rgba(255,255,255,0.06)' stroke='rgba(255,255,255,0.12)' />

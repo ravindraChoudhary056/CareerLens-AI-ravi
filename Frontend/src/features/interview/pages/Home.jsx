@@ -90,9 +90,9 @@ const Home = () => {
     return (
         <div className='home-page'>
             <header className='page-header'>
-                <div className='page-header__eyebrow'>AI Interview Intelligence</div>
+                <div className='page-header__eyebrow'>CareerLens AI</div>
                 <h1>Create a <span className='highlight'>premium interview plan</span> in minutes</h1>
-                <p>Blend your target role, background, and resume into a focused strategy that helps you stand out.</p>
+                <p>AI-Powered Resume Intelligence & Career Optimization Platform for stronger positioning and interview readiness.</p>
             </header>
 
             <div className='interview-card'>
@@ -233,6 +233,7 @@ const Home = () => {
             )}
 
             <footer className='page-footer'>
+                <span>CareerLens AI</span>
                 <a href='#'>Privacy policy</a>
                 <a href='#'>Terms</a>
                 <a href='#'>Help center</a>

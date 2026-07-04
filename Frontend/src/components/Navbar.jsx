@@ -36,8 +36,8 @@ const Navbar = () => {
             <div className="app-navbar__brand">
                 <span className="app-navbar__mark" />
                 <div>
-                    <p className="app-navbar__name">Northstar AI</p>
-                    <p className="app-navbar__sub">Interview readiness platform</p>
+                    <p className="app-navbar__name">CareerLens AI</p>
+                    <p className="app-navbar__sub">AI-Powered Resume Intelligence & Career Optimization Platform</p>
                 </div>
             </div>
 
@@ -59,7 +59,7 @@ const Navbar = () => {
                             <div className="app-navbar__avatar app-navbar__avatar--large">{initials}</div>
                             <div>
                                 <p className="app-navbar__profile-name">{user.username || 'Member'}</p>
-                                <p className="app-navbar__profile-email">{user.email || 'member@northstar.ai'}</p>
+                                <p className="app-navbar__profile-email">{user.email || 'member@careerlens.ai'}</p>
                             </div>
                         </div>
                         <button type="button" className="app-navbar__menu-item" onClick={() => setOpen(false)}>

@@ -136,8 +136,8 @@ const Register = () => {
                 <div className='auth-card__visual'>
                     <div className='auth-card__visual-glow' />
                     <div className='auth-card__visual-content'>
-                        <p className='auth-card__eyebrow'>Northstar AI</p>
-                        <h2>Launch a sharper preparation workflow.</h2>
+                        <p className='auth-card__eyebrow'>CareerLens AI</p>
+                        <h2>Shape a stronger career narrative.</h2>
                         <p>Build polished interview stories and understand the gaps that matter before the big day.</p>
                         <div className='auth-card__illustration' aria-hidden='true'>
                             <svg viewBox='0 0 320 220' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'>
