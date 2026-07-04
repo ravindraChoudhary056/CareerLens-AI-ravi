@@ -1,4 +1,4 @@
-# 🚀 North Star AI
+# 🚀 CareerLens AI
 
 > AI-powered Resume Intelligence Platform that analyzes resumes against job descriptions, generates ATS match scores, identifies skill gaps, suggests personalized learning roadmaps, and creates AI-enhanced resumes using Google's Gemini API.
 
