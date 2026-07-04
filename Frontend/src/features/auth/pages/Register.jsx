@@ -123,7 +123,7 @@ const Register = () => {
                                     setOtp(event.target.value)
                                     setErrors((current) => ({ ...current, otp: '' }))
                                 }}
-                                placeholder='Enter 4-digit OTP'
+                                placeholder='Enter 4-character verification code'
                                 error={errors.otp}
                             />
                         )}
