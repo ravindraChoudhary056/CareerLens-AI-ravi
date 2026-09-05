@@ -1,0 +1,191 @@
+$bg-page: #06090e;
+$bg-card: rgba(10, 15, 22, 0.9);
+$bg-panel: rgba(15, 21, 29, 0.95);
+$bg-input: rgba(255, 255, 255, 0.03);
+$border-color: rgba(255, 255, 255, 0.08);
+$text-primary: #f5f8fc;
+$text-muted: #88a0b8;
+$accent: #4fc3ff;
+$accent-strong: #2d7af7;
+$font-stack: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+.auth-shell {
+    min-height: calc(100vh - 72px);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    box-sizing: border-box;
+}
+
+.auth-card {
+    width: min(1100px, 100%);
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    border: 1px solid $border-color;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    background: $bg-card;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+}
+
+.auth-card__form {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.auth-card__head {
+    margin-bottom: 0.4rem;
+
+    h1 {
+        margin: 0.2rem 0 0.35rem;
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        color: $text-primary;
+    }
+
+    p {
+        margin: 0;
+        color: $text-muted;
+        line-height: 1.7;
+    }
+}
+
+.auth-card__eyebrow {
+    margin: 0;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: $accent;
+}
+
+.auth-card__visual {
+    position: relative;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(79, 195, 255, 0.16), rgba(255, 255, 255, 0.03));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 520px;
+    overflow: hidden;
+}
+
+.auth-card__visual-glow {
+    position: absolute;
+    inset: auto auto -90px -90px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(79,195,255,0.25) 0%, rgba(79,195,255,0) 72%);
+    filter: blur(6px);
+}
+
+.auth-card__visual-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    max-width: 340px;
+}
+
+.auth-card__visual-content h2 {
+    margin: 0;
+    color: $text-primary;
+    font-size: 1.45rem;
+    line-height: 1.25;
+}
+
+.auth-card__visual-content p {
+    margin: 0;
+    color: $text-muted;
+    line-height: 1.7;
+}
+
+.auth-card__illustration {
+    width: min(360px, 100%);
+    margin-top: 1rem;
+    border-radius: 1.25rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.auth-submit {
+    margin-top: 0.25rem;
+}
+
+.auth-link {
+    margin: 0;
+    color: $text-muted;
+    font-size: 0.95rem;
+
+    a {
+        color: $accent;
+        text-decoration: none;
+        font-weight: 600;
+    }
+}
+
+.auth-card__resend {
+    background: transparent;
+    border: none;
+    color: $accent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-top: 0.5rem;
+
+    &:disabled {
+        color: $text-muted;
+        cursor: not-allowed;
+        text-decoration: none;
+    }
+}
+
+.auth-shell .loading-screen__card {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1.2rem;
+    padding: 2rem;
+    min-width: min(320px, 90vw);
+    text-align: center;
+}
+
+@media (max-width: 860px) {
+    .auth-card {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-card__visual {
+        min-height: 320px;
+        order: -1;
+    }
+}
+
+@media (max-width: 560px) {
+    .auth-shell {
+        padding: 0.8rem;
+    }
+
+    .auth-card__form,
+    .auth-card__visual {
+        padding: 1.2rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .auth-card__form {
+        padding: 1rem;
+    }
+    
+    .auth-card__head h1 {
+        font-size: 1.4rem;
+    }
+}

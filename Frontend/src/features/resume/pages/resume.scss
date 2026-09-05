@@ -1,0 +1,196 @@
+$accent: #4fc3ff;
+$accent-strong: #2d7af7;
+$text-primary: #f5f8fc;
+$text-muted: #88a0b8;
+$border-color: rgba(255, 255, 255, 0.08);
+$bg-card: rgba(10, 15, 22, 0.9);
+
+.resumes-page {
+    width: 100%;
+    min-height: calc(100vh - 72px);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+
+        h1 {
+            font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+            font-weight: 700;
+        }
+
+        p {
+            color: $text-muted;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+    }
+}
+
+.upload-resume-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: 0.8rem;
+    background: linear-gradient(135deg, $accent, $accent-strong);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(45, 122, 247, 0.2);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
+
+.resumes-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 4rem 2rem;
+    text-align: center;
+    color: $text-muted;
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1.2rem;
+
+    h3 {
+        color: $text-primary;
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }
+
+    p {
+        max-width: 360px;
+        line-height: 1.6;
+    }
+
+    .upload-resume-btn {
+        margin-top: 0.5rem;
+    }
+}
+
+.resumes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.resume-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1rem;
+    transition: border-color 180ms ease, transform 180ms ease;
+
+    &:hover {
+        border-color: rgba(79, 195, 255, 0.25);
+        transform: translateY(-1px);
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 0.7rem;
+        background: rgba(79, 195, 255, 0.1);
+        color: $accent;
+        flex-shrink: 0;
+    }
+
+    &__info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: $text-primary;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__meta {
+        font-size: 0.82rem;
+        color: $text-muted;
+        margin-top: 0.15rem;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+}
+
+.resume-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 0.6rem;
+    border: 1px solid $border-color;
+    background: transparent;
+    color: $text-muted;
+    cursor: pointer;
+    transition: all 180ms ease;
+
+    &--download:hover {
+        color: $accent;
+        border-color: rgba(79, 195, 255, 0.35);
+        background: rgba(79, 195, 255, 0.08);
+    }
+
+    &--delete:hover {
+        color: #ff8484;
+        border-color: rgba(255, 132, 132, 0.35);
+        background: rgba(255, 132, 132, 0.08);
+    }
+}
+
+@media (max-width: 640px) {
+    .resumes-page {
+        padding: 1.2rem 1rem 2rem;
+
+        &__header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    .resume-card {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+
+        &__actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+}
