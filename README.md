@@ -1,140 +1,191 @@
-# 🚀 CareerLens AI
+# Web Server Security: OS Command Injection (In-Band)
 
-> An intelligent, AI-driven platform designed to optimize resumes, generate personalized interview preparation plans, and provide deep ATS-compatibility analysis.
-
-CareerLens AI leverages Google's **Gemini API** alongside a robust **Node.js/React** stack to parse resume data, compare it semantically against job descriptions, and deliver actionable career insights.
-
----
-
-## ✨ Key Features
-
-- **📄 Automated Resume Parsing:** Extracts and analyzes unstructured data from uploaded PDFs.
-- **🎯 ATS Match Scoring:** Evaluates resume-to-JD compatibility using semantic matching.
-- **🧠 Skill Gap Analysis:** Highlights critical missing keywords and required competencies.
-- **💡 Dynamic Question Generation:** Auto-generates targeted technical and behavioral interview questions based on the candidate's specific profile and the role's difficulty.
-- **📈 Learning Roadmaps:** Creates day-by-day personalized preparation strategies.
-- **🔄 ATS-Friendly PDF Export:** Re-generates and exports optimized resumes dynamically via Puppeteer.
-- **🔐 Enterprise-Grade Security:** Secures endpoints and user sessions with JWT, HTTP-only cookies, bcrypt, and token blacklisting.
+**Course:** Cyber Security (IT-30001) — Autumn Semester 2026  
+**Department:** Department of Information Technology  
+**Institution:** Indian Institute of Information Technology Allahabad (IIITA)  
+**Instructor:** Dr. Soumyadev Maity  
 
 ---
 
-## 🤖 System Architecture & AI Workflow
+## Ownership Declaration
 
-```mermaid
-graph TD;
-    A[User Uploads Resume PDF & JD] --> B[PDF-Parse Extracts Text];
-    B --> C[Node.js Backend & Zod Validation];
-    C --> D[Gemini API];
-    D --> E[Semantic Analysis & Scoring];
-    D --> F[Skill Gap Detection];
-    D --> G[Interview Question Generation];
-    E --> H[Structured JSON Output];
-    F --> H;
-    G --> H;
-    H --> I[MongoDB Atlas Storage];
-    I --> J[React UI Dashboard];
+Replace the placeholders before submission; do not leave them as-is.
+
+| Member name | Roll number | Category | Variant implemented |
+| :--- | :--- | :--- | :--- |
+| Piyush | IIT2024204 | OS command injection | Variant 1: In-band (command output returned) |
+
+---
+
+## Project Overview
+
+This repository contains an academic demonstration of **OS Command Injection (In-Band / Command Output Returned)** developed for the Web Server Security assignment. 
+
+The lab provides an interactive side-by-side comparison between:
+1. **An intentionally vulnerable endpoint (`/vulnerable`)**: Demonstrates how unsanitized user input concatenated into an OS shell command leads to command injection and arbitrary command execution.
+2. **A secured, mitigated endpoint (`/safe`)**: Demonstrates mitigation through parameterized argument vector execution with shell invocation disabled (`shell=False`).
+
+> **Security & Scope Notice:** This application binds strictly to the local loopback address (`127.0.0.1:8000`) and uses harmless demonstration payloads (`echo`). It is strictly intended for local authorized educational testing.
+
+---
+
+## How to Run the Application
+
+The application is built entirely using the Python 3 standard library (`http.server`, `subprocess`, `urllib.parse`); no third-party packages or virtual environment installations are required.
+
+### 1. Start the Web Server
+
+From this directory, open your terminal (PowerShell / Command Prompt) and run:
+
+```powershell
+python app.py
+```
+*(If `python` is not registered in your PATH, use the Python launcher: `py app.py`)*
+
+The server will initialize at:
+👉 **`http://127.0.0.1:8000/`**
+
+To terminate the server, press `Ctrl + C` in the terminal.
+
+---
+
+## Verify the Behaviour (Automated Unit Tests)
+
+Automated tests are implemented in `test_app.py` using Python's `unittest` framework to mathematically verify both the exploitability of the vulnerable variant and the efficacy of the mitigation.
+
+### With the virtual environment active:
+```powershell
+python -m unittest -v
+```
+
+### On Windows without activation:
+```powershell
+py -m unittest -v
+```
+*(Or invoke via the virtual environment interpreter: `.venv\Scripts\python.exe -m unittest discover -s tests -v` if arranged into a tests directory).*
+
+**Expected Test Output:**
+```text
+test_safe_variant_treats_same_payload_as_literal_data (test_app.CommandInjectionLabTests) ... 
+[PASS] Safe variant treated payload as literal text data.
+ok
+test_vulnerable_variant_runs_harmless_injected_echo (test_app.CommandInjectionLabTests) ... 
+[PASS] Vulnerable variant executed the injected command successfully.
+ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.082s
+
+OK
 ```
 
 ---
 
-## 🛠 Tech Stack
+## Technical Analysis & Evaluation Requirements (Table 2)
 
-### Frontend
-- **Framework:** React.js, Vite
-- **Styling:** SCSS, Custom Design System
-- **Routing:** React Router DOM
+### (a) Vulnerable Implementation
+In `app.py`, the `vulnerable_command()` function constructs an operating-system command string by directly interpolating untrusted user input into an `echo` statement:
 
-### Backend
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Database:** MongoDB Atlas
-- **AI Integration:** Google Gemini API (`@google/genai`)
-- **Document Processing:** PDF-Parse, Puppeteer
-- **Storage:** Cloudinary
-- **Security & Validation:** JWT, bcrypt, Zod, Nodemailer (OTP)
+```python
+def vulnerable_command(message: str) -> str:
+    command = f"echo {message}"
+    result = run(
+        command,
+        shell=True,          # Invokes system shell (cmd.exe on Windows / sh on Linux)
+        capture_output=True,
+        text=True,
+        timeout=5,
+        check=True,
+    )
+    return result.stdout.strip()
+```
+Because `shell=True` is enabled, the entire concatenated string is passed directly to the operating system's command interpreter (`cmd.exe`).
+
+### (b) Working Exploit
+* **Target Payload:** 
+  ```text
+  hello & echo INJECTED
+  ```
+* **Execution Flow:** 
+  When entered into the vulnerable form, the shell parses the string as:
+  `echo hello & echo INJECTED`
+  Because `&` serves as a command separator in command shells, the shell executes `echo hello` followed immediately by `echo INJECTED`.
+* **In-Band Output Evidence:**
+  The server captures both standard outputs and transmits them directly within the HTTP 200 response:
+  ```text
+  hello
+  INJECTED
+  ```
+
+### (c) Root Cause
+The vulnerability arises from the **failure to separate code (command instructions) from untrusted data (user input)**. By passing raw user input to a shell interpreter, shell metacharacters (such as `&`, `|`, `;`) are interpreted as control syntax rather than literal text data.
+
+### (d) Mitigation Implemented
+The fix is implemented in `safe_command()`, which employs **Parameterized Process Execution (Argument Vector)** with shell execution disabled:
+
+```python
+def safe_command(message: str) -> str:
+    args = [sys.executable, "-c", "import sys; print(sys.argv[1])", message]
+    result = run(
+        args,
+        shell=False,         # Direct process execution; no shell parsing occurs
+        capture_output=True,
+        text=True,
+        timeout=5,
+        check=True,
+    )
+    return result.stdout.strip()
+```
+* **Why it works:** By using `shell=False` and supplying arguments as a discrete list (`argv`), the operating system kernel spawns the executable directly via `CreateProcessW()`. The entire string `hello & echo INJECTED` is treated strictly as data in `sys.argv[1]`.
+* **Output on Mitigation:**
+  ```text
+  hello & echo INJECTED
+  ```
+  The appended command is neutralised and rendered verbatim without execution.
+
+### (e) Other Mitigations (Theory)
+As covered in lecture slides, alternative defense mechanisms include:
+
+1. **Avoid Shell Invocation (Native APIs):**
+   Whenever system operations (file handling, directory management, networking) are required, utilize built-in programming language APIs (e.g., `os.remove`, `pathlib`, `socket`) rather than invoking underlying OS shell utilities. This eliminates command interpreters from the execution path entirely.
+2. **Input Validation with Strict Allow-Lists:**
+   Enforce strict input validation using regular expression allow-listing (e.g., `^[a-zA-Z0-9 ]+$`). Inputs containing special shell metacharacters (`&`, `;`, `|`, `$`, `>`, `<`) are rejected before execution. *(Note: Validation should serve as a defense-in-depth layer rather than a substitute for parameterized execution).*
+3. **Input Sanitization and Metacharacter Escaping:**
+   Neutralize shell metacharacters by escaping them (e.g., prefixing with `^` in Windows CMD or using `shlex.quote()` in POSIX shells) to ensure they are parsed as literal characters.
+4. **Principle of Least Privilege:**
+   Run the web server process under a restricted, low-privilege service account with minimal filesystem and execution rights. While this does not prevent injection, it limits the blast radius of an exploit (e.g., prevents privilege escalation and unauthorized modifications).
 
 ---
 
-## 🚀 Getting Started
+## Step-by-Step Video Demonstration Script (2–3 Minutes)
 
-### Prerequisites
-Before you begin, ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (v16 or higher)
-- [MongoDB](https://www.mongodb.com/) (Local or Atlas cluster)
-- API Keys for Google Gemini and Cloudinary
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/ravindraChoudhary056/CareerLens-AI-ravi.git
-cd CareerLens-AI
-```
-
-### 2. Backend Setup
-Navigate to the backend directory and install dependencies:
-```bash
-cd Backend
-npm install
-```
-
-Create a `.env` file in the `Backend` directory and configure the following variables:
-```env
-# Server Configuration
-PORT=5000
-
-# Database
-MONGO_URI=your_mongodb_atlas_connection_string
-
-# Authentication
-JWT_SECRET=your_super_secret_jwt_key
-
-# External APIs
-GEMINI_API_KEY=your_gemini_api_key
-
-# Cloudinary Storage
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-
-# Email Service (Nodemailer OTP)
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_16_digit_app_password
-```
-
-Start the backend development server:
-```bash
-npm run dev
-```
-
-### 3. Frontend Setup
-Open a new terminal, navigate to the frontend directory, and install dependencies:
-```bash
-cd Frontend
-npm install
-```
-
-Start the frontend development server:
-```bash
-npm run dev
-```
-
-The application will be running at `http://localhost:5173` (or the port specified by Vite).
+1. **Introduction (~20s):**
+   * Introduce yourself by name and roll number (`IIT2024204`).
+   * State your assigned problem category: **OS Command Injection — Variant 1: In-Band (Command Output Returned)**.
+2. **Code Walkthrough (~40s):**
+   * Open `app.py`. Highlight `vulnerable_command()` showing string formatting `f"echo {message}"` and `shell=True`.
+   * Point out the separation flaw.
+3. **Demonstrating the Working Exploit (~40s):**
+   * Switch to browser at `http://127.0.0.1:8000/`.
+   * In the **Vulnerable Path** input field, enter `hello & echo INJECTED`.
+   * Click submit and show the output showing both `hello` and `INJECTED`.
+   * State the root cause: The shell parsed `&` as a command separator.
+4. **Demonstrating the Mitigation (~40s):**
+   * Enter the exact same payload `hello & echo INJECTED` into the **Mitigated Path** input field.
+   * Click submit and show the output: `hello & echo INJECTED` printed literally.
+   * Show `safe_command()` in `app.py` explaining `shell=False` and argument vector array.
+5. **Brief Theory & Conclusion (~20s):**
+   * Mention alternative mitigations: native APIs, strict allow-listing, and least privilege.
+   * Run automated tests in terminal (`python -m unittest -v`) to show `OK (2 tests passed)`.
 
 ---
 
-## 🔒 Security Implementations
+## Viva Preparation & Defense Checklist
 
-Security is prioritized throughout the application lifecycle:
-- **Authentication:** Stateless authentication using JWTs delivered via secure, HTTP-only cookies.
-- **Authorization:** Middleware-protected private routes.
-- **Data Protection:** Passwords hashed with bcrypt; one-time passwords (OTP) for email verification.
-- **Session Management:** Token blacklisting implemented for secure logout operations.
-- **Data Validation:** Strict runtime type-checking and schema validation for all API inputs using Zod.
-
----
-
-## 👨‍💻 Author
-
-**Ravindra Choudhary**  
-*Full Stack Developer | AI Integration 
-
-⭐️ *If you found this project helpful, please consider giving it a star!*
+| Question | Defended Answer |
+| :--- | :--- |
+| **Why did the payload execute in the vulnerable endpoint?** | Because `shell=True` passes the concatenated string to `cmd.exe`, which recognizes `&` as a command separator and executes the trailing command. |
+| **Why is this classified as "In-Band"?** | The output of the injected command is returned directly within the HTTP response stream to the client. |
+| **Why does `shell=False` fix the vulnerability?** | It spawns the executable process directly at the OS level without invoking a shell interpreter, passing inputs as discrete arguments where metacharacters lose syntax meaning. |
+| **Can allow-list validation replace parameterization?** | No. Allow-listing is vulnerable to developer error and regex bypasses; parameterization enforces structural code-data separation and is the primary defense. |
+| **What does least privilege accomplish?** | It restricts what an attacker can do if injection succeeds (defense-in-depth), but does not prevent the injection itself. |
